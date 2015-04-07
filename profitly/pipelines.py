@@ -71,13 +71,23 @@ class MongoDBBrokerPipeline(ProfitlyPipeline):
     def __init__(self):
         super(MongoDBBrokerPipeline, self).__init__()
         connection = pymongo.Connection(MONGODB_SERVER, MONGODB_PORT)
-        db = connection[MONGODB_DB]
-        self.collection = db['brokers']
+        self.db = connection[MONGODB_DB]
+        self.collections = {}
+        self.collections['brokers'] = self.db['brokers']
+        self.collections['users'] = self.db['users']
+        dispatcher.connect(self.spider_opened, signals.spider_opened)
+        dispatcher.connect(self.spider_closed, signals.spider_closed)
+
+    def spider_opened(self, spider):
+        self.collections[spider.name] = self.db[spider.name]
         # remove all for clean insertion
-        self.collection.remove()
+        self.collections[spider.name].remove()
+
+    def spider_closed(self, spider):
+        stub=''
 
     def process_item(self, item, spider):
         #if not isinstance(item, items.ProfitlyItem):
         #return item # return the item to let other pipeline to handle it
-        self.collection.insert(dict(item))
+        self.collections[spider.name].insert(dict(item))
         return item # return the item to let other pipeline to handle it
