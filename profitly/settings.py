@@ -13,3 +13,7 @@ SPIDER_MODULES = ['profitly.spiders']
 NEWSPIDER_MODULE = 'profitly.spiders'
 USER_AGENT = '%s/%s' % (BOT_NAME, BOT_VERSION)
 
+ITEM_PIPELINES = {
+    'profitly.pipelines.CsvExportPipeline': 2000,
+    'profitly.pipelines.JsonWithEncodingPipeline': 3000,
+}
