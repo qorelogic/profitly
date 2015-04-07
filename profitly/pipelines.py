@@ -74,7 +74,8 @@ class MongoDBBrokerPipeline(ProfitlyPipeline):
         self.db = connection[MONGODB_DB]
         self.collections = {}
         self.collections['brokers'] = self.db['brokers']
-        self.collections['users'] = self.db['users']
+        self.collections['users']   = self.db['users']
+        self.collections['trades']   = self.db['trades']
         dispatcher.connect(self.spider_opened, signals.spider_opened)
         dispatcher.connect(self.spider_closed, signals.spider_closed)
 
