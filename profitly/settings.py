@@ -16,4 +16,9 @@ USER_AGENT = '%s/%s' % (BOT_NAME, BOT_VERSION)
 ITEM_PIPELINES = {
     'profitly.pipelines.CsvExportPipeline': 2000,
     'profitly.pipelines.JsonWithEncodingPipeline': 3000,
+    'profitly.pipelines.MongoDBBrokerPipeline':3001,
 }
+
+MONGODB_SERVER = "localhost"
+MONGODB_PORT = 27017
+MONGODB_DB = BOT_NAME # db name

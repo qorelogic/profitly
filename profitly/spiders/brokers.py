@@ -9,7 +9,7 @@ class BrokersSpider(CrawlSpider):
     start_urls = ['http://profit.ly/leaderboard/broker/top/alltime']
 
     rules = (
-        Rule(SgmlLinkExtractor(allow=r'/leaderboard/broker/top/alltime\?page=[\d]+&size=[\d]+'), callback='parse_item', follow=True),
+        Rule(SgmlLinkExtractor(allow=r'/leaderboard/broker/top/alltime\?page=[\d]+&size=[\d]+'), callback='parse_item', follow=False),
     )
 
     # scrapy parse --spider=brokers -c parse_item 'http://profit.ly/leaderboard/broker/top/alltime'
@@ -26,8 +26,8 @@ class BrokersSpider(CrawlSpider):
             # modify $123k and $1.23M to float format
             profit = profit.replace(',', '')            
             profit = profit.replace('$', '')            
-            try:    profit = float(profit.replace('k', ''))*1000
-            except: profit = float(profit.replace('M', ''))*1000000
+            try:    profit = int(float(profit.replace('k', ''))*1000)
+            except: profit = int(float(profit.replace('M', ''))*1000000)
             #print [com]
             items.append(ProfitlyItem(company=com, href=href, profit=profit))
         return items

@@ -8,9 +8,12 @@ from scrapy import signals
 from scrapy.contrib.exporter import JsonLinesItemExporter
 from scrapy.contrib.exporter import CsvItemExporter
 
+import pymongo
+from settings import *
+
 class ProfitlyPipeline(object):
     def __init__(self):
-        self.proj = 'profitly'
+        self.proj = BOT_NAME
         
     def process_item(self, item, spider):
         return item
@@ -63,3 +66,18 @@ class CsvExportPipeline(ProfitlyPipeline):
     def process_item(self, item, spider):
         self.exporter.export_item(item)
         return item
+
+class MongoDBBrokerPipeline(ProfitlyPipeline):
+    def __init__(self):
+        super(MongoDBBrokerPipeline, self).__init__()
+        connection = pymongo.Connection(MONGODB_SERVER, MONGODB_PORT)
+        db = connection[MONGODB_DB]
+        self.collection = db['brokers']
+        # remove all for clean insertion
+        self.collection.remove()
+
+    def process_item(self, item, spider):
+        #if not isinstance(item, items.ProfitlyItem):
+        #return item # return the item to let other pipeline to handle it
+        self.collection.insert(dict(item))
+        return item # return the item to let other pipeline to handle it
